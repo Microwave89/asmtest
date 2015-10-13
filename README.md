@@ -18,7 +18,8 @@ Conclusion:
 - A leaf function is NOT required to have a function prologue.
 
 - When using local variables within a leaf function the space required for them is equal to the sum of all variable sizes, rounded up to an 8 byte aligned value. The computed value is to be inserted in a sub rsp, xxx instruction.
-- The first variable is found @ rsp. Subsequent ones @ rsp+firstVariableSize. 
+
+- In a leaf function the first variable is found @ rsp. Subsequent ones @ rsp+firstVariableSize. 
 
 - Existence of a function PROLOGUE requires always a corresponding EPILOGUE.
 
