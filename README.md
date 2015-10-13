@@ -13,7 +13,7 @@ Conclusion:
 
 - There exist 2 types of functions, "LEAF FUNCTIONS and "FRAME FUNCTIONS".
 
-- A LEAF function does not call any other functions (--> it is a leaf on a tree of functions) or issue any Intel 0F 05 syscalls. After a possible function PROLOGUE the stack pointer is NOT required to be 16-bit aligned.
+- A LEAF function does not call any other functions (--> it is a leaf on a tree of function calls) or issue any Intel 0F 05 syscalls. After a possible function PROLOGUE the stack pointer is NOT required to be 16-bit aligned.
 
 - A leaf function is NOT required to have a function prologue.
 
