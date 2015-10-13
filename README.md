@@ -15,11 +15,16 @@ Conclusion:
 
 - A LEAF function does not call any other functions (--> it is a leaf on a tree of functions) or issue any Intel 0F 05 syscalls. After a possible function PROLOGUE the stack pointer is NOT required to be 16-bit aligned.
 
+- A leaf function is NOT required to have a function prologue.
+
+- When using local variables within a leaf function the space required for them is equal to the sum of all variable sizes, rounded up to an 8 byte aligned value. The computed value is to be inserted in a sub rsp, xxx instruction.
+- The first variable is found @ rsp. Subsequent ones @ rsp+firstVariableSize. 
+
 - Existence of a function PROLOGUE requires always a corresponding EPILOGUE.
 
-- A FRAME function calls other functions or issues syscall instructions. After execution of the prologue, being mandatory now, the stack pointer MUST be 16-bit aligned, say, it must look like 0x???????????????0!
+- A FRAME function calls other functions or issues syscall instructions, and MUST employ a function prologue. After execution of the prologue, the stack pointer MUST be 16-bit aligned, say, it must look like 0x???????????????0!
 
-- Such a function also needs a corresponding EPILOGUE
+- 
 - A function PROLOGUE of a leaf function can be completely missing.
 - at minimum look like:
 
