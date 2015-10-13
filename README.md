@@ -149,14 +149,16 @@ someSmallFrameFunction2 ENDP
 
 - The XYZ in any [rsp+XYZ] memory location being referenced cannot be equal or greater than the sum of all rsp substracted values.
 - --> E.g. You cannot "sub rsp, 50h" and reference "[rsp+50h]" in any arguments to callee or local variables.
+- --> It can only be greater if shadow space is being referenced after executing the prologue. An exact value will be given below. 
 
-- In a frame function any locals are found starting at &"last argument to callee" + 8.
+- In a frame function THE LOCALS are found STARTING AT &"last argument to callee" + 8.
+- --> Note that shadow space can also be used to store locals or even function arguments.
 
 - ==> ReturnAddress + saved registers + shadow space + callee arguments + locals + alignment = n*16
  
 - If an 8-byte alignment is necessary, it may be treated as space reservation for one callee argument or one variable.
 
-- After the entire prologue has been executed, the callee finds ITS FIRST HOMED VALUE at:
+- After the entire prologue has been executed, the callee finds ITS FIRST HOMED VALUE (begin of shadow space) at:
 - ==> rsp + 8 * ("push count" + 1) + rsp subtracted value (from callee's view)
 
 - The FIRST STACK-BASED ARGUMENT (5th argument) can be found at:
