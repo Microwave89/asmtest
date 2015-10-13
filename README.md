@@ -87,37 +87,42 @@ someFunction2 ENDP
 
 - A FRAME function calls other functions or issues syscall instructions, and MUST employ a function prologue. After execution of the prologue, the stack pointer MUST be 16-bit aligned, say, it must look like 0x???????????????0!
 
-- Any frame function must perform a MINIMUM allocation of "sub rsp, 28h" if there is NO or an even count "push r64" before. 
-- --> The allocation is for SHADOW SPACE (see above) and return address of the next deeper callee.
+- Any frame function must perform a MINIMUM allocation of "sub rsp, 28h" if there is NO or EVEN count "push r64" before. 
+- --> The allocation is for SHADOW SPACE (see above) and return address of the next deeper callee:
+
 
 someSmallFrameFunction PROC
 
+    push r13
+    push r14
     sub rsp, 28h
     call nextDeeperFunction
     add rsp 28h
+    pop r14
+    pop r13
     ret
     
 someSmallFrameFunction ENDP
 
 
-Even count:
+- Any frame function must perform a MINIMUM allocation of "sub rsp, 30h" if there is an ODD count of "push r64" before.
+- --> The allocation is for shadow space, return address and the required 8-byte alignment of the stack pointer
+
 
 someSmallFrameFunction2 PROC
 
     push rbx
-    push rsi
-    sub rsp, 28h
+    sub rsp, 30h
     call nextDeeperFunction
-    add rsp 28h
-    pop rsi
+    add rsp 30h
     pop rbx
     ret
     
 someSmallFrameFunction2 ENDP
 
 
-- Any frame function must perform a MINIMUM allocation of "sub rsp, 30h" if there is an ODD count of "push r64" before.
-- --> The allocation is for shadow space, return address and the required 8-byte alignment of the stack pointer
+
+
 
 someSmallFrameFunction3 PROC
 
