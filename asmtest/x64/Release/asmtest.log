@@ -1,0 +1,15 @@
+﻿Build started 13.10.2015 16:19:39.
+     1>Project "C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\asmtest\asmtest.vcxproj" on node 2 (Rebuild target(s)).
+     1>_MASM:
+         Assembling auxfuncs.asm...
+         cmd.exe /C "C:\Users\MicrowaveStd\AppData\Local\Temp\tmp637e02569c2243258db263fbd2f85f6c.cmd"
+         ml64.exe /c /nologo /Zf /Zi /Fo"x64\Release\auxfuncs.obj" /W3 /errorReport:prompt  /Taauxfuncs.asm
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\x64\Release\asmtest.exe" /VERSION:"6.1" /INCREMENTAL:NO /NOLOGO "C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\asmtest\Libraries\myntdll.bin" /NODEFAULTLIB /MANIFEST:NO /DEBUG /PDB:"C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\x64\Release\asmtest.pdb" /MAP /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /ENTRY:"mymain" /DYNAMICBASE /FIXED:NO /NXCOMPAT /IMPLIB:"C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\x64\Release\asmtest.lib" /MACHINE:X64 /SAFESEH:NO x64\Release\auxfuncs.obj
+         LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+         asmtest.vcxproj -> C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\x64\Release\asmtest.exe
+     1>Done Building Project "C:\Users\MicrowaveStd\Documents\Visual Studio 2015\Projects\um\asmtest\asmtest\asmtest.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.14
