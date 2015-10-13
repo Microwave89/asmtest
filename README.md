@@ -56,6 +56,7 @@ someFunction ENDP
 - --> r10, rdx, r8, r9 (all used and altered), r10, r11 (altered)
 
 - both leaf and frame functions can HOME up to 4 ARBITRARY 8-BYTE (r64, imm64, m64) values. (SHADOW SPACE):
+- Homing occurs as the FIRST INSTRUCTIONS within the called function, BEFORE ANY "push r64" or "sub rsp, XYZ" instructions are made. It is NOT necessary to perform homing though.
 
 someFunction PROC
 
@@ -147,18 +148,19 @@ someSmallFrameFunction2 ENDP
 - --> The allocations of ReturnAddress + shadow space + callee arguments + local variables + 8-byte alignment can be written IN ONE "sub rsp, XYZ" instruction where XYZ = SUM OF ABOVE ALLOCATIONS.
 
 - The XYZ in any [rsp+XYZ] memory location being referenced cannot be equal or greater than the sum of all rsp substracted values.
+- --> E.g. You cannot "sub rsp, 50h" and reference "[rsp+50h]" in any arguments to callee or local variables.
 
-- Any locals are found starting at &"last argument to callee" + 8.
+- In a frame function any locals are found starting at &"last argument to callee" + 8.
 
 - ReturnAddress + saved registers + shadow space + callee arguments + locals + alignment = n*16
  
 - If an 8-byte alignment is necessary, it may be treated as space reservation for one callee argument or one variable.
 
 - After the entire prologue has been executed, the callee finds ITS FIRST HOMED VALUE at:
-- ==> rsp + 8 * ("push count" + 1) + rsp subtracted value
+- ==> rsp + 8 * ("push count" + 1) + rsp subtracted value (from callee's view)
 
 - The FIRST STACK-BASED ARGUMENT (5th argument) can be found at:
-- ==> rsp + 8 * ("push count" + 5) + rsp subtracted value
+- ==> rsp + 8 * ("push count" + 5) + rsp subtracted value (from callee's view)
 
 - --> rsp subtracted value = XYZ in "mov rsp, XYZ", is the sum of all allocations as stated above.
 - --> "push count" denotes how many registers are being saved on the stack, and it depends on register usage.
