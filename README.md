@@ -9,7 +9,7 @@ Core elements include how to properly handle stack-based data.
 Syntax used:
 
     r64 = any 64-bit register (rax, rbx, rcx, rdx, r8, r9, r10, r11, r12, r13, r14, r15, rsp, rbp, rsi, rdi)
-    m64 = any 64-bit value in memory (*(ULONGLONG*)someVar)
+    m64 = any 64-bit value in memory (*pUlonglong)
     imm64 = any hardcoded 64-bit value, e.g. "0CCCCCCCCCCCCCCCCh"
 
 
@@ -55,7 +55,7 @@ someFunction ENDP
 - The following registers are used/altered by a syscall instruction:
 - --> r10, rdx, r8, r9 (all used and altered), r10, r11 (altered)
 
-- both leaf and frame functions can HOME 4 ARBITRARY 8-BYTE (r64, imm64, m64) values. (SHADOW SPACE):
+- both leaf and frame functions can HOME up to 4 ARBITRARY 8-BYTE (r64, imm64, m64) values. (SHADOW SPACE):
 
 someFunction PROC
 
@@ -70,7 +70,7 @@ someFunction PROC
 
 someFunction ENDP
 
-Often this is used to save rcx, rdx, r8 and r9:
+Often this is used to save rcx, rdx, r8 and r9, it is most common in debug version of C code:
 
 
 someFunction2 PROC
@@ -87,8 +87,50 @@ someFunction2 ENDP
 
 - A FRAME function calls other functions or issues syscall instructions, and MUST employ a function prologue. After execution of the prologue, the stack pointer MUST be 16-bit aligned, say, it must look like 0x???????????????0!
 
+- Any frame function must perform a MINIMUM allocation of "sub rsp, 28h" if there is NO or an even count "push r64" before. 
+- --> The allocation is for SHADOW SPACE (see above) and return address of the next deeper callee.
 
-- 
+someSmallFrameFunction PROC
+
+    sub rsp, 28h
+    call nextDeeperFunction
+    add rsp 28h
+    ret
+    
+someSmallFrameFunction ENDP
+
+
+Even count:
+
+someSmallFrameFunction2 PROC
+
+    push rbx
+    push rsi
+    sub rsp, 28h
+    call nextDeeperFunction
+    add rsp 28h
+    pop rsi
+    pop rbx
+    ret
+    
+someSmallFrameFunction2 ENDP
+
+
+- Any frame function must perform a MINIMUM allocation of "sub rsp, 30h" if there is an ODD count of "push r64" before.
+- --> The allocation is for shadow space, return address and the required 8-byte alignment of the stack pointer
+
+someSmallFrameFunction3 PROC
+
+    push rbx
+    sub rsp, 28h
+    call nextDeeperFunction
+    add rsp 28h
+    ret
+    
+someSmallFrameFunction3 ENDP
+
+- Space for additional arguments to the callee  
+
 - A function PROLOGUE of a leaf function can be completely missing.
 - at minimum look like:
 
