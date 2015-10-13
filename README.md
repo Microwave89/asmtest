@@ -15,7 +15,7 @@ Syntax used:
 
 Conclusion:
 
-- Inside of each call, IMMEDIATELY after a call instruction has been executed, each CALLEE is guaranteed to receive a stack pointer "rsp" = 0x???????????????8. It does not matter if the call is API-internal or in a user's program.
+- Inside each call, IMMEDIATELY after a call instruction has been executed, each CALLEE is guaranteed to receive a stack pointer "rsp" = 0x???????????????8. It does not matter if the call is API-internal or in a user's program.
 
 - There exist 2 types of functions, "LEAF FUNCTIONS and "FRAME FUNCTIONS".
 
@@ -106,7 +106,7 @@ someSmallFrameFunction ENDP
 
 
 - Any frame function must perform a MINIMUM allocation of "sub rsp, 30h" if there is an ODD count of "push r64" before.
-- --> The allocation is for shadow space, return address and the required 8-byte alignment of the stack pointer
+- --> The allocation is for shadow space, return address AND THE REQUIRED 8-BYTE ALIGNMENT of the stack pointer:
 
 
 someSmallFrameFunction2 PROC
@@ -120,19 +120,23 @@ someSmallFrameFunction2 PROC
     
 someSmallFrameFunction2 ENDP
 
+- Caller supplies first four arguments always in rcx, rdx, r8 and r9, and additional ones on the stack.
 
+- The caller supplies the stack-based arguments starting at "rsp + 20h".
 
+- Each argument requires reservation of additional space on the stack.
+- --> The caller executes an additional "sub rsp, 8 * numOfArguments" for each ULONGLONG argument.
 
+- Each local variable requires reservation of additional space on the stack.
+- --> The caller executes an additional "sub rsp, 8 * numOfVariables" for each ULONGLONG variable.
 
-someSmallFrameFunction3 PROC
+- --> The allocations of ReturnAddress + shadow space + callee arguments + local variables + 8-byte alignment can be written IN ONE "sub rsp, XYZ" instruction where XYZ = SUM OF ABOVE ALLOCATIONS.
 
-    push rbx
-    sub rsp, 28h
-    call nextDeeperFunction
-    add rsp 28h
-    ret
-    
-someSmallFrameFunction3 ENDP
+- The XYZ in any [rsp+XYZ] memory location being referenced cannot be equal or greater than the sum of all rsp substracted values.
+
+- Locals can be sub
+
+- ReturnAddress + saved registers + shadow space + callee arguments + locals + alignment = n*16
 
 - Space for additional arguments to the callee  
 
