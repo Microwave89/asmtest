@@ -84,6 +84,20 @@ someFunction2 PROC
 
 someFunction2 ENDP
 
+- If all four registers are homed, the following version is one byte shorter:
+
+someFunction3 PROC
+
+    mov     rax, rsp
+    mov     qword ptr [rax+8],rcx
+    mov     qword ptr [rax+10h],rdx
+    mov     qword ptr [rax+18h],r8
+    mov     qword ptr [rax+20h],r9
+    nop
+    ...
+
+someFunction3 ENDP
+
 
 - A FRAME function calls other functions or issues syscall instructions, and MUST employ a function prologue. After execution of the prologue, the stack pointer MUST be 16-bit aligned, say, it must look like 0x???????????????0!
 
@@ -134,57 +148,20 @@ someSmallFrameFunction2 ENDP
 
 - The XYZ in any [rsp+XYZ] memory location being referenced cannot be equal or greater than the sum of all rsp substracted values.
 
-- Locals can be sub
+- Any locals are found starting at &"last argument to callee" + 8.
 
 - ReturnAddress + saved registers + shadow space + callee arguments + locals + alignment = n*16
+ 
+- If an 8-byte alignment is necessary, it may be treated as space reservation for one callee argument or one variable.
 
-- Space for additional arguments to the callee  
+- After the entire prologue has been executed, the callee finds ITS FIRST HOMED VALUE at:
+- ==> rsp + 8 * ("push count" + 1) + rsp subtracted value
 
-- A function PROLOGUE of a leaf function can be completely missing.
-- at minimum look like:
+- The FIRST STACK-BASED ARGUMENT (5th argument) can be found at:
+- ==> rsp + 8 * ("push count" + 5) + rsp subtracted value
 
-someSmallSub PROC
-
-    xor eax, eax
-    ret
-    
-someSmallSub ENDP
-
-and at maximum like (following function allocates space on the stack for 3 8 byte local variables):
-
-someBigSub PROC
-
-    mov [rsp+8], rcx
-    mov [rsp+10h], rdx
-    mov [rsp+18h], r8
-    mov [rsp+20h], r9
-    push rbx
-    push rbp
-    push rsi
-    push rdi
-    push r12
-    push r13
-    push r14
-    push r15
-    sub rsp, 18h
-    mov qword ptr [rsp], 1
-    mov qword ptr [rsp+8], 2
-    mov qword ptr [rsp+10h], 3
-    mov eax, 12345678h
-    add rsp, 18h
-    pop r15
-    pop r14
-    pop r13
-    pop r12
-    pop rdi
-    pop rsi
-    pop rbp
-    pop rbx
-    ret
-  
-someBigSub ENDP
+- --> rsp subtracted value = XYZ in "mov rsp, XYZ", is the sum of all allocations as stated above.
+- --> "push count" denotes how many registers are being saved on the stack, and it depends on register usage.
 
 
-
-  looks like
-- After a function PROLOG 
+==> An entire working example of those conventions is implemented in the auxfuncs.asm file.
