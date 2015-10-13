@@ -6,6 +6,12 @@ Codemachine and McDermott Cypersecurity on x64 assembly, and put it together in 
 
 Core elements include how to properly handle stack-based data.
 
+Syntax used:
+
+    r64 = any 64-bit register (rax, rbx, rcx, rdx, r8, r9, r10, r11, r12, r13, r14, r15, rsp, rbp, rsi, rdi)
+    m64 = any 64-bit value in memory (*(ULONGLONG*)someVar)
+    imm64 = any hardcoded 64-bit value, e.g. "0CCCCCCCCCCCCCCCCh"
+
 
 Conclusion:
 
@@ -25,8 +31,8 @@ Conclusion:
 
 - Existence of a function PROLOGUE requires always a corresponding EPILOGUE:
 - --> Each previous "sub rsp, XYZ" must now be matched with a "add rsp, XYZ", where "XYZ" must be the VERY SAME value.
-- --> Each previous "push r??" must now be matched with a "pop r??", where "r??" must be the VERY SAME register.
-- --> "push R??" before "sub rsp, XYZ" and "add rsp, XYZ" before "pop R??".
+- --> Each previous "push r64" must now be matched with a "pop r64", where "r64" must be the VERY SAME register.
+- --> "push r64" before "sub rsp, XYZ" and "add rsp, XYZ" before "pop r64".
 Example:
 
 someFunction PROC
@@ -42,7 +48,45 @@ someFunction PROC
 
 someFunction ENDP
 
+- The following registers must be considered destroyed after a function call:
+- --> rcx, rdx, r8, r9, rax
+- The following registers must be preserved by callee:
+- --> rbx, rbp, rsi, rdi, r12, r13, r14, r15
+- The following registers are used/altered by a syscall instruction:
+- --> r10, rdx, r8, r9 (all used and altered), r10, r11 (altered)
+
+- both leaf and frame functions can HOME 4 ARBITRARY 8-BYTE (r64, imm64, m64) values. (SHADOW SPACE):
+
+someFunction PROC
+
+    mov [rsp+8], rcx
+    mov rcx, 0AFCEFCEFCEFCEFCEh
+    mov [rsp+10h], rcx
+    mov rcx, [rsp-0A68h]
+    mov [rsp+18h], rcx
+    mov dword ptr [rsp+20h], 065AFEBCAh
+    nop
+    ...
+
+someFunction ENDP
+
+Often this is used to save rcx, rdx, r8 and r9:
+
+
+someFunction2 PROC
+
+    mov [rsp+8], rcx
+    mov [rsp+10h], rdx
+    mov [rsp+18h], r8
+    mov [rsp+20h], r9
+    nop
+    ...
+
+someFunction2 ENDP
+
+
 - A FRAME function calls other functions or issues syscall instructions, and MUST employ a function prologue. After execution of the prologue, the stack pointer MUST be 16-bit aligned, say, it must look like 0x???????????????0!
+
 
 - 
 - A function PROLOGUE of a leaf function can be completely missing.
