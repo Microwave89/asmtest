@@ -48,7 +48,7 @@ someFunction PROC
 
 someFunction ENDP
 
-- The following registers must be considered destroyed after a function call:
+- The following registers must be considered as destroyed after a function call:
 - --> rcx, rdx, r8, r9, rax
 - The following registers must be preserved by callee:
 - --> rbx, rbp, rsi, rdi, r12, r13, r14, r15
