@@ -149,7 +149,7 @@ someSmallFrameFunction2 ENDP
 
 - The XYZ in any [rsp+XYZ] memory location being referenced cannot be equal or greater than the sum of all rsp substracted values.
 - --> E.g. You cannot "sub rsp, 50h" and reference "[rsp+50h]" in any arguments to callee or local variables.
-- --> It can only be greater if shadow space is being referenced after executing the prologue. An exact value will be given below. 
+- --> The XYZ value can only be greater if shadow space is being referenced after executing the prologue. See below for more information on shadow space location.
 
 - In a frame function THE LOCALS are found STARTING AT &"last argument to callee" + 8.
 - --> Note that shadow space can also be used to store locals or even function arguments.
