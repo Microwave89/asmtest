@@ -152,7 +152,7 @@ someSmallFrameFunction2 ENDP
 
 - In a frame function any locals are found starting at &"last argument to callee" + 8.
 
-- ReturnAddress + saved registers + shadow space + callee arguments + locals + alignment = n*16
+- ==> ReturnAddress + saved registers + shadow space + callee arguments + locals + alignment = n*16
  
 - If an 8-byte alignment is necessary, it may be treated as space reservation for one callee argument or one variable.
 
